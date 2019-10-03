@@ -1,34 +1,79 @@
-﻿#いろいろインポート
-import tkinter as tk
-from mutagen.mp3 import MP3 as mp3
+﻿# -*- coding: utf-8 -*-
+from pygame.locals import *
 import pygame
-import time
+import sys
+import io
 
-from tkinter import messagebox as mbox
-
-# ウィンドウを作成 
-win = tk.Tk()
-win.geometry("700x650") # サイズ指定
-
-# OKボタンを押した時
-def ok_click():
-
-    filename = 'alert.mp3' #再生したいmp3ファイル
-    pygame.mixer.init()
-    pygame.mixer.music.load(filename) 
-    mp3_length = mp3(filename).info.length 
-    pygame.mixer.music.play(-1) #再生開始。-1の部分を変えるとn回再生(この時は無限ループになっている。)
-    time.sleep(mp3_length -1) #再生開始後、音源の長さだけ待つ(0.25待つのは誤差解消)
+def main():
+    pygame.init()    # Pygame reset
+    screen = pygame.display.set_mode((300, 100))    # window
+    pygame.display.set_caption("model rocket control app")    #app title
+    
+    StartBtn = pygame.Rect(30, 30, 70, 50)
+    pausBtn  = pygame.Rect(115, 30, 70, 50)
+    StopBtn  = pygame.Rect(200, 30, 70, 50)
+    emergencyBtn = pygame.Rect(200, 30, 70, 50)
+    #button font
+    font = pygame.font.SysFont(None, 25)
+    
+    #button text
+    text1 = font.render("alert", True, (0,0,0))
+    text2 = font.render("stop", True, (0,0,0))
+    #text3 = font.render("STOP",  True, (0,0,0))
+    text4 = font.render("urgency", True, (0,0,0))
+    textpos  = text1.get_rect()
+    textpos  = text2.get_rect()
+    textpos  = text4.get_rect()
  
-    endButton.when_pressed = lambda: any(s.stop() for s in (filename))
 
-# ボタンを作成 ---
-alertButton = tk.Button(win, text='OK', command=ok_click)
-alertButton.pack()
+    #Mixer reset
+    pygame.mixer.init(frequency = 44100)
+    
+    paused = False
+    
+    running = True
 
-endButton = tk.Button(win, text='stop')
-endButton.pack()
+    #loop
+    while running:
+        screen.fill((0,0,0))  #Fill with black
+        
+        pygame.draw.rect(screen, (255, 0, 0), StartBtn)
+        pygame.draw.rect(screen, (0, 255, 0), pausBtn)
+        pygame.draw.rect(screen, (255, 0, 255), StopBtn)
+        pygame.draw.rect(screen, (255, 0, 255), emergencyBtn)
 
+        screen.blit(text1, (40, 45))
+        screen.blit(text2, (125,45))
+     #   screen.blit(text3, (205,45))
+        screen.blit(text4, (205,45))
 
-                    # ウィンドウを動かす
-win.mainloop()
+        pygame.display.update() #draw
+        for event in pygame.event.get():
+            if event.type == QUIT:  #end event
+                running = False
+                pygame.quit()  #close pygame window
+                sys.exit() #exit
+                
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if StartBtn.collidepoint(event.pos):
+                    pygame.mixer.music.load("sound/alert.mp3")     # sound read
+                    pygame.mixer.music.play()
+                    print("lunch alert")
+                    
+                if pausBtn.collidepoint(event.pos):
+                    pygame.mixer.music.pause()
+                    paused = True
+                    print("stop alert")
+                
+                if StopBtn.collidepoint(event.pos):
+                    paused = True
+                    pygame.mixer.music.stop()
+                    print("emergency alert")
+
+                if emergencyBtn.collidepoint(event.pos):
+                    pygame.mixer.music.load("sound/emergency.mp3")
+                    pygame.mixer.music.play()
+                    print("emergency")
+
+if __name__=="__main__":
+    main()
