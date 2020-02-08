@@ -19,7 +19,6 @@ def main():
     #button text
     text1 = font.render("alert", True, (0,0,0))
     text2 = font.render("stop", True, (0,0,0))
-    #text3 = font.render("STOP",  True, (0,0,0))
     text4 = font.render("urgency", True, (0,0,0))
     textpos  = text1.get_rect()
     textpos  = text2.get_rect()
@@ -44,7 +43,6 @@ def main():
 
         screen.blit(text1, (40, 45))
         screen.blit(text2, (125,45))
-     #   screen.blit(text3, (205,45))
         screen.blit(text4, (205,45))
 
         pygame.display.update() #draw
